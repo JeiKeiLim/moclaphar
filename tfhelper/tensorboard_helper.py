@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import io
+from tensorboard import program
+import datetime
+import time
 
 
 class ConfuseCallback(tf.keras.callbacks.Callback):
@@ -128,6 +131,40 @@ def wait_ctrl_c(pre_msg="Press Ctrl+c to quit Tensorboard", post_msg="\nExit."):
     try:
         while True:
             time.sleep(3600)
-    except:
+    except KeyboardInterrupt:
         print(post_msg)
 
+
+def get_tf_callbacks(root,
+                     tboard_callback=True, tboard_update_freq='epoch', tboard_histogram_freq=1, tboard_profile_batch=0,
+                     confuse_callback=True, label_info=None, test_generator_=None,
+                     modelsaver_callback=True, best_loss=float('inf'), save_root=None, best_epoch=0):
+    postfix = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_root_ = "{}{}/".format(root, postfix)
+
+    callbacks_ = []
+
+    if tboard_callback:
+        callbacks_.append(tf.keras.callbacks.TensorBoard(log_dir="{}fit".format(log_root_),
+                                                         histogram_freq=tboard_histogram_freq,
+                                                         update_freq=tboard_update_freq,
+                                                         profile_batch=tboard_profile_batch)
+                         )
+
+    #TODO: generate label_info if not given
+    if confuse_callback:
+        file_writer = tf.summary.create_file_writer("{}/cm".format(log_root_, postfix))
+        callbacks_.append(ConfuseCallback(test_generator_.data['test_data'],
+                                          test_generator_.data['test_label'],
+                                          list(label_info.keys()),
+                                          file_writer)
+                          )
+
+    if modelsaver_callback:
+        if not save_root:
+            save_root = log_root_
+        callbacks_.append(
+            ModelSaverCallback(best_loss=best_loss, save_root=save_root, epoch=best_epoch)
+        )
+
+    return callbacks_, log_root_

@@ -11,11 +11,14 @@ class HDF5Generator:
         f = self.data
 
         self.n_data = f["{}_data".format(self.prefix)].shape[0]
-        label_name= "{}_label".format(self.prefix)
+        label_name = "{}_label".format(self.prefix)
 
-        self.n_class = len(np.unique(f[label_name][()]))
-        hist = np.histogram(f[label_name][()], bins=self.n_class - 1)
-        self.class_weight = (1 / hist[0]) * f[label_name].shape[0] / self.n_class
+        labels = f[label_name][()]
+        unique_labels = np.unique(labels)
+        hist = np.array([labels[labels == i].shape[0] for i in unique_labels])
+
+        self.n_class = unique_labels.shape[0]
+        self.class_weight = (1 / hist) * labels.shape[0] / self.n_class
 
         if verbose > 0:
             print("=+*"*20)

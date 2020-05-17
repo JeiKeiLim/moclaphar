@@ -146,12 +146,13 @@ def generate_training_test_data(data, label, subjects, subject_list, training_po
 
 #TODO : make_training_data without sliding window
 def make_training_data(data_root, save_root, window_size=300, stride=1, chunk_size=50,
-                       normalize_axis=True, merge_clap_null=True, training_portion=0.8, shuffle=True,
+                       normalize_axis=True, normalize_max=1,
+                       merge_clap_null=True, training_portion=0.8, shuffle=True,
                        verbose=1):
     data, label, subjects, label_info, subject_list = prepare_data(data_root, merge_clap_null=merge_clap_null)
 
     if normalize_axis:
-        data = normalize_data(data, norm_max=1)
+        data = normalize_data(data, norm_max=normalize_max)
 
     training_data, training_label, training_subject, test_data, test_label, test_subject = \
         generate_training_test_data(data, label, subjects, subject_list, training_portion=training_portion,
