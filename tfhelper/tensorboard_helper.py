@@ -112,3 +112,22 @@ class ModelSaverCallback(tf.keras.callbacks.Callback):
         except Exception as e:
             print(e)
 
+
+def run_tensorboard(path, port=6006):
+    tb = program.TensorBoard()
+    tb.configure(argv=[None, '--logdir', path, '--host', '0.0.0.0', '--port', f"{port:}"])
+    url = tb.launch()
+
+    print("Running tensorboard on {}".format(url))
+
+    return url
+
+
+def wait_ctrl_c(pre_msg="Press Ctrl+c to quit Tensorboard", post_msg="\nExit."):
+    print(pre_msg)
+    try:
+        while True:
+            time.sleep(3600)
+    except:
+        print(post_msg)
+

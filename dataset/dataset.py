@@ -144,6 +144,7 @@ def generate_training_test_data(data, label, subjects, subject_list, training_po
     return training_data, training_label, training_subject, test_data, test_label, test_subject
 
 
+#TODO : make_training_data without sliding window
 def make_training_data(data_root, save_root, window_size=300, stride=1, chunk_size=50,
                        normalize_axis=True, merge_clap_null=True, training_portion=0.8, shuffle=True,
                        verbose=1):
