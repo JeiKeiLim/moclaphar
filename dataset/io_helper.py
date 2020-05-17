@@ -1,4 +1,5 @@
 import h5py
+import numpy as np
 from .preprocess import generate_sliding_window_data
 from .preprocess import reshape_data
 
@@ -48,7 +49,6 @@ def save_windowed_dataset_hdf5(training_data, training_label, test_data, test_la
         e_idx = min(i + chunk_size, len(test_data))
         save_windowed_data_hdf5(test_data, test_label, s_idx, e_idx, window_size=window_size,
                                 stride=stride, save_root="{}".format(save_root), prefix="test")
-
 
 if __name__ == "__main__":
     pass

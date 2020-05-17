@@ -9,6 +9,7 @@ import numpy as np
 import os
 import re
 import json
+from tqdm import tqdm
 
 
 def get_file_list(root, ext=""):
@@ -30,19 +31,19 @@ def prepare_data(root, accelerometer=True, gyroscope=True, orientation=False, st
     subject_list = set()
     file_list = get_file_list(root, ext=".mat")
 
-    for i, fpath in enumerate(file_list):
+    pbar = tqdm(file_list, desc="Reading mat files ...")
+    for i, fpath in enumerate(pbar):
         subject_name = re.search("(S[0-9]+_|[sS]troke[0-9]+)", fpath).group().replace("_", "").lower()
 
         if (stroke and not subject_name.startswith("stroke")) or \
                 (not stroke and subject_name.startswith("stroke")):
             continue
 
+        pbar.set_description("Reading {} ...".format(fpath))
+
         subject_list.add(subject_name)
 
         try:
-            if verbose > 0:
-                print("Reading {} ... ({}/{}) {:.2f}% :: Subject name : {}".format(fpath, i+1, len(file_list), ((i+1)/len(file_list)*100), subject_name))
-
             csv, video, segment = read_mat_file(fpath)
 
             for sensor_data, label, name in zip(segment['segment_sensor_data'], segment['segment_label'], segment['segment_name']):

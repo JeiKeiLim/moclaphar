@@ -86,6 +86,15 @@ def read_mat_file(path):
     for i in range(segment_x.shape[0]):
         segment_x[i] = segment_x[i].flatten()
 
+    # Fixing NaN value on sensor segments
+    for i in range(segment_sensor_data.shape[0]):
+        for j in range(segment_sensor_data[i].shape[2]):
+            mask = np.isnan(segment_sensor_data[i][:, :, j])
+            mask_idx = np.argwhere(mask)
+            for idx in mask_idx:
+                idx1, idx2 = idx[0], idx[1]
+                segment_sensor_data[i][idx1, idx2, j] = segment_sensor_data[i][idx1-1, idx2, j]
+
     segment_data = dict()
     segment_data["video_sync_time"] = video_sync_time
     segment_data["segment_x"] = segment_x

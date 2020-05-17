@@ -15,10 +15,11 @@ class HDF5Generator:
 
         labels = f[label_name][()]
         unique_labels = np.unique(labels)
-        hist = np.array([labels[labels == i].shape[0] for i in unique_labels])
 
+        self.class_histogram = np.array([labels[labels == i].shape[0] for i in unique_labels])
         self.n_class = unique_labels.shape[0]
-        self.class_weight = (1 / hist) * labels.shape[0] / self.n_class
+        c_weight = (1 / self.class_histogram) * labels.shape[0] / self.n_class
+        self.class_weight = {i: weight for i, weight in enumerate(c_weight)}
 
         if verbose > 0:
             print("=+*"*20)
@@ -39,3 +40,13 @@ class HDF5Generator:
         d_set = d_set.shuffle(n_shuffle, reshuffle_each_iteration=True) if shuffle else d_set
 
         return d_set.batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
+
+    def nan_check(self):
+        key = "{}_data".format(self.prefix)
+
+        is_nan = False
+        for i in range(self.data[key].shape[0]):
+            if np.sum(np.isnan(self.data[key][i].flatten())) > 0:
+                print("NaN Exist! on {}".format(i))
+                is_nan = True
+        return is_nan
