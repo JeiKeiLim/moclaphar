@@ -581,8 +581,8 @@ def run_annotator(video_path_, data_path_, v_width=640):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Data Label Maker")
     parser.add_argument('--vw', type=int, default=640, help="Video width to be displayed. Minimum : 640")
-    parser.add_argument('--video_path', type=str, default="", help="Video file path for labeling")
-    parser.add_argument('--data_path', type=str, default="", help="Data file path(csv or mat) for labeling")
+    parser.add_argument('--video-path', type=str, default="", help="Video file path for labeling")
+    parser.add_argument('--data-path', type=str, default="", help="Data file path(csv or mat) for labeling")
     args = parser.parse_args()
 
     run_annotator(args.video_path, args.data_path, v_width=args.vw)

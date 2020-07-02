@@ -4,4 +4,5 @@ seaborn>=0.10.1
 h5py>=2.10.0
 pandas>=1.0.3
 moviepy>=1.0.3
+opencv-python>=4.2.0
 tensorflow>=2.2.0

@@ -1,5 +1,4 @@
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-import imageio
 
 
 def generate_segmented_video(vid_info, segment_data, video_root, save_root=None, verbose=0):
@@ -9,9 +8,6 @@ def generate_segmented_video(vid_info, segment_data, video_root, save_root=None,
 
     if save_root is None:
         save_root = video_root + "/" + "segment/"
-
-    # install ffmpeg plugin
-    imageio.plugins.ffmpeg.download()
 
     video_sync = segment_data['video_sync_time']
 
@@ -26,7 +22,7 @@ def generate_segmented_video(vid_info, segment_data, video_root, save_root=None,
         start_t = video_x[0] + video_sync
         end_t = video_x[video_x.shape[0] - 1] + video_sync
 
-        file_name = video_name + "_" + str(i) + "_" + str(segment_label) + "_" + segment_name[0] + ".mp4"
+        file_name = video_name + "_" + str(i) + "_" + str(segment_label) + "_" + segment_name + ".mp4"
 
         ffmpeg_extract_subclip(video_path, start_t, end_t, save_root + file_name)
 

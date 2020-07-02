@@ -145,11 +145,27 @@ def generate_training_test_data(data, label, subjects, subject_list, training_po
     return training_data, training_label, training_subject, test_data, test_label, test_subject
 
 
-#TODO : make_training_data without sliding window
-def make_training_data(data_root, save_root, window_size=300, stride=1, chunk_size=50,
+def make_training_data(data_root, save_root=None, window_size=300, stride=1, chunk_size=50,
                        normalize_axis=True, normalize_max=1,
                        merge_clap_null=True, training_portion=0.8, shuffle=True,
                        verbose=1):
+    """
+
+    :param data_root: Root directory of dataset
+    :param save_root: Root directory of generated data. None if window_size < 1
+    :param window_size: Less than 1 will return without sliding windowed data as (training_data, training_label, training_subject, test_data, test_label, test_subject)
+    :param stride: Size of stride
+    :param chunk_size:
+    :param normalize_axis: Normalize each axis from 0 to normalize_max by calculating each axis's min/max values
+    :param normalize_max: Maximum value to be set when normalize_axis is True
+    :param merge_clap_null: Treats clap label as null
+    :param training_portion: Percentage of subjects included in training data from entire dataset
+    :param shuffle: Shuffle subjects order.
+    :param verbose:
+    :return:
+    """
+    assert (save_root is not None and window_size > 0) or window_size < 1
+
     data, label, subjects, label_info, subject_list = prepare_data(data_root, merge_clap_null=merge_clap_null)
 
     if normalize_axis:
@@ -158,6 +174,9 @@ def make_training_data(data_root, save_root, window_size=300, stride=1, chunk_si
     training_data, training_label, training_subject, test_data, test_label, test_subject = \
         generate_training_test_data(data, label, subjects, subject_list, training_portion=training_portion,
                                     shuffle=shuffle, verbose=verbose)
+
+    if window_size < 1:
+        return training_data, training_label, training_subject, test_data, test_label, test_subject
 
     save_windowed_dataset_hdf5(training_data, training_label, test_data, test_label,
                                window_size=window_size, stride=stride, save_root=save_root,
